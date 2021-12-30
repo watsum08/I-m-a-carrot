@@ -4,7 +4,7 @@ function Background(image) {
     this.width = CANVAS_WIDTH;
     this.height = CANVAS_HEIGHT;
     this.sprite = image;
-    
+
 
     this.update = function() {
         
@@ -39,7 +39,7 @@ function Switch(x, y, image) {
     }
 
     this.update = function() {
-        
+
         this.draw();
     }
 
@@ -80,6 +80,7 @@ function Table(x, y, image) {
 
 
     this.update = function() {
+
         this.draw();
     }
 

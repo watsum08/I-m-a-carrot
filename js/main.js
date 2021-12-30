@@ -8,29 +8,36 @@ let canvasOffset = 0;
 let objects = [];
 
 let darkToggle = true;
+let background;
+let theSwitch;
+let lightBulb;
+let table;
 
-let background = new Background(IMG_BACKGROUND);
-objects.push(background);
+function start() {
+    background = new Background(IMG_BACKGROUND);
+    objects.push(background);
 
-let theSwitch = new Switch(100, 200, IMG_SWITCHOFF);
-objects.push(theSwitch);
+    theSwitch = new Switch(200, 200, IMG_SWITCHOFF);
+    objects.push(theSwitch);
+    
+    lightBulb = new Lightbulb((CANVAS_WIDTH-IMG_LIGHTBULBOFF.width)/2, 0, IMG_LIGHTBULBOFF);
+    objects.push(lightBulb);
 
-let lightBulb = new Lightbulb((CANVAS_WIDTH-IMG_LIGHTBULBOFF.width)/2, 0, IMG_LIGHTBULBOFF);
-objects.push(lightBulb);
+    table = new Table((CANVAS_WIDTH-IMG_TABLE.width)/2, CANVAS_HEIGHT-240, IMG_TABLE);
+    objects.push(table);
 
-let table = new Table((CANVAS_WIDTH-IMG_TABLE.width)/2, CANVAS_HEIGHT-240, IMG_TABLE);
-objects.push(table);
+    canvas.addEventListener("click", function(e) {
+        if (isMouseOn(e, theSwitch)) {
+            theSwitch.interact();
+        }
+    });
 
-document.addEventListener('click', function (e) {
-    if (isMouseOn(e, theSwitch)) {
-        theSwitch.interact();
-    }
-
-});
+    main();
+}
 
 function isMouseOn(mouse, object) {
-    if (mouse.x >= object.x && mouse.x <= object.x + object.width
-        && mouse.y >= object.y && mouse.y <= object.y + object.height) {
+    if (mouse.offsetX >= object.x && mouse.offsetX <= object.x + object.width
+        && mouse.offsetY >= object.y+canvasOffset && mouse.offsetY <= object.y+canvasOffset + object.height) {
             return true;
         } else {
             return false;
@@ -52,10 +59,8 @@ function main() {
         object.update();
     });
 
-    if (darkToggle) {
+    /*if (darkToggle) {
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    }
+    }*/
 }
-
-main();
