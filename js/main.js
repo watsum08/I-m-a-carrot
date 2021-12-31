@@ -28,6 +28,26 @@ let darkToggle = true;
 function start() {
     background = new Background(IMG_BACKGROUND);
     objects.push(background);
+    let bgCollider = new Object();
+    bgCollider.width = 1280;
+    bgCollider.height = 1;
+    bgCollider.x = 0;
+    bgCollider.y = CANVAS_HEIGHT-20;
+    colliders.push(bgCollider);
+
+    let leftBorderCollider = new Object();
+    leftBorderCollider.width = 1;
+    leftBorderCollider.height = CANVAS_HEIGHT;
+    leftBorderCollider.x = 0;
+    leftBorderCollider.y = 0;
+    colliders.push(leftBorderCollider);
+
+    let rightBorderCollider = new Object();
+    rightBorderCollider.width = 1;
+    rightBorderCollider.height = CANVAS_HEIGHT;
+    rightBorderCollider.x = 1280;
+    rightBorderCollider.y = 0;
+    colliders.push(rightBorderCollider);
 
     theSwitch = new Switch(200, 200, IMG_SWITCHOFF);
     objects.push(theSwitch);
@@ -35,16 +55,18 @@ function start() {
     lightBulb = new Lightbulb((CANVAS_WIDTH-IMG_LIGHTBULBOFF.width)/2, 0, IMG_LIGHTBULBOFF);
     objects.push(lightBulb);
 
-    table = new Table((CANVAS_WIDTH-IMG_TABLE.width)/2, CANVAS_HEIGHT-200, IMG_TABLE);
+    table = new Table((CANVAS_WIDTH-IMG_TABLE.width)/2, 520, IMG_TABLE);
     objects.push(table);
-    colliders.push(Object.assign({}, table));
-    colliders[0].height = 26;
+    let tableCollider = Object.assign({}, table);
+    tableCollider.height = 30;
+    tableCollider.y += 3;
+    colliders.push(tableCollider);
 
     pot = new Pot((CANVAS_WIDTH-IMG_POT.width)/2, 451, IMG_POT);
     objects.push(pot);
     colliders.push(pot);
 
-    aquarium = new Aquarium(200, 200, IMG_AQUARIUM);
+    aquarium = new Aquarium(300, 200, IMG_AQUARIUM);
     objects.push(aquarium); // a mettre ensemble shelf, books et aquarium (images et objet)
 
     theWindow = new Window(900, 80, IMG_WINDOWNEW);
@@ -53,13 +75,17 @@ function start() {
     dog = new Dog(1051, 231, IMG_TILES_DOG);
     objects.push(dog);
 
-    carrot = new Carrot(900, 350, IMG_TILES_CARROT);
+    carrot = new Carrot((CANVAS_WIDTH-100)/2, 325, IMG_TILES_CARROT);
     objects.push(carrot);
 
-    canvas.addEventListener("click", function(e) {
+    canvas.addEventListener('click', function(e) {
         if (isMouseOn(e, theSwitch)) {
             theSwitch.interact();
         }
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+        carrot.mouseStick(e);
     });
 
     document.addEventListener('keydown', function(event) {
@@ -92,23 +118,26 @@ function isMouseOn(mouse, object) {
         }
 }
 
-function isCarrotOnTopOfCol(obj) {
-    if (obj.x+36 < col.x + col.width &&
-        obj.x + obj.width-35 > col.x &&
-        obj.y + obj.height === col.y) {
+function isCarrotOnTopOfMouse(obj, mouse) {
+    if (obj.x+36 < mouse.x + mouse.width &&
+        obj.x + obj.width-35 > mouse.x &&
+        obj.y + obj.height < mouse.y &&
+        obj.y + obj.height > mouse.y) {
             return true;
         } else {
             return false;
         }
 }
 
-function isCarrotBesideOfCol(obj, col) {
+function isCarrotOnTopOfCol(obj, col) {
     if (obj.x+36 < col.x + col.width &&
         obj.x + obj.width-35 > col.x &&
-        obj.y < col.y + col.height &&
-        obj.height + obj.y > col.y) {
-        return true;
-    } else { return false; }
+        obj.y + obj.height < col.y+3 &&
+        obj.y + obj.height > col.y-3) {
+            return true;
+        } else {
+            return false;
+        }
 }
 
 function isCarrotLeftOfCol(obj, col) {

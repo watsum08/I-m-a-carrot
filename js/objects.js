@@ -174,6 +174,26 @@ function Carrot(x, y, image) {
     this.speedX = 0;
     this.speedY = 0;
     this.maxSpeed = 4;
+    this.gravitate = false;
+    this.mouseSticking = false;
+
+
+    this.mouseStick = function(e) {
+        if (carrot.y + carrot.height + canvasOffset - e.offsetY < 15 &&
+            carrot.y + carrot.height + canvasOffset - e.offsetY > -15 &&
+            carrot.x+36 < e.offsetX &&
+            carrot.x + carrot.width-35 > e.offsetX &&
+            carrot.isAdult) { 
+
+        this.mouseSticking = true;
+        this.y = e.offsetY - this.height - canvasOffset - 3;
+        let moveX = e.offsetX - this.x - this.width/2;
+        this.x += moveX;
+
+        } else {
+                carrot.mouseSticking = false;
+            }
+    }
 
     this.move = function() {
         if (this.isBaby) {
@@ -187,6 +207,9 @@ function Carrot(x, y, image) {
         } else if (this.isAdult) {
             if (!isCarrotRightOfCol(this, colliders[0]) &&
                 !isCarrotRightOfCol(this, colliders[1]) &&
+                !isCarrotRightOfCol(this, colliders[2]) &&
+                !isCarrotRightOfCol(this, colliders[3]) &&
+                !isCarrotRightOfCol(this, colliders[4]) &&
                 leftKeyDown && !rightKeyDown) {
                 if (this.animationFrame < 47) {
                     if (!(frames%2)) {
@@ -200,6 +223,9 @@ function Carrot(x, y, image) {
                 }
             } else if (!isCarrotLeftOfCol(this, colliders[0]) &&
                         !isCarrotLeftOfCol(this, colliders[1]) &&
+                        !isCarrotLeftOfCol(this, colliders[2]) &&
+                        !isCarrotLeftOfCol(this, colliders[3]) &&
+                        !isCarrotLeftOfCol(this, colliders[4]) &&
                         rightKeyDown && !leftKeyDown) {
                 if (this.animationFrame < 47) {
                     if (!(frames%2)) {
@@ -216,25 +242,49 @@ function Carrot(x, y, image) {
                 this.speedX = 0;
             }
         }
-        
-        this.x += this.speedX/2;
+    
     }
 
     this.update = function() {
-        if (canvasOffset < -160 && !this.isAdult) {
+        if (canvasOffset < -160 && !this.isAdult && !darkToggle) {
             this.isBaby = false;
 
             if (this.animationFrame < 39) {
-                if (!(frames%2)) {
+                if (!(frames%4)) {
                     this.animationFrame++;
                 }
             } else {
                 this.isAdult = true;
+                this.gravitate = true;
             }
         }
 
+        if (this.mouseSticking) {
+            this.gravitate = false;
+        }
+
+       for (let i = 0; i < colliders.length; i++) {
+            if (isCarrotOnTopOfCol(this, colliders[i])) {
+                this.gravitate = false;
+                break;
+            } else if (!this.mouseSticking) {
+                this.gravitate = true;
+            }
+        }
+
+        if (this.isAdult && this.gravitate && !this.mouseSticking) {
+            if (this.speedY < this.maxSpeed) {
+                this.speedY++;
+            }
+        } else if (this.isAdult && !this.gravitate && !this.mouseSticking) {
+            this.speedY = 0;
+        }
+
+        
 
         this.move();
+        this.x += this.speedX/2;
+        this.y += this.speedY;
         this.draw();
     }
 
