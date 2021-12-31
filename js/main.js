@@ -14,6 +14,8 @@ let rightKeyDown = false;
 
 let objects = [];
 let colliders = [];
+let browserXPos = [];
+let browserMoving = false;
 let background;
 let theSwitch;
 let lightBulb;
@@ -49,7 +51,7 @@ function start() {
     rightBorderCollider.y = 0;
     colliders.push(rightBorderCollider);
 
-    theSwitch = new Switch(200, 200, IMG_SWITCHOFF);
+    theSwitch = new Switch(150, 280, IMG_SWITCHOFF);
     objects.push(theSwitch);
     
     lightBulb = new Lightbulb((CANVAS_WIDTH-IMG_LIGHTBULBOFF.width)/2, 0, IMG_LIGHTBULBOFF);
@@ -66,8 +68,12 @@ function start() {
     objects.push(pot);
     colliders.push(pot);
 
-    aquarium = new Aquarium(300, 200, IMG_AQUARIUM);
-    objects.push(aquarium); // a mettre ensemble shelf, books et aquarium (images et objet)
+    bookshelfaquarium = new BookShelfAquarium(305, 100, IMG_TILES_BOOKONSHELF);
+    objects.push(bookshelfaquarium);
+    let shelfCollider = Object.assign({}, bookshelfaquarium);
+    shelfCollider.y += shelfCollider.height - 16;
+    shelfCollider.height = 16;
+    colliders.push(shelfCollider);
 
     theWindow = new Window(900, 80, IMG_WINDOWNEW);
     objects.push(theWindow);
@@ -86,6 +92,18 @@ function start() {
 
     canvas.addEventListener('mousemove', function(e) {
         carrot.mouseStick(e);
+    });
+
+    canvas.addEventListener('mousedown', function(e) {
+        if (isMouseOn(e, pot)) {
+            pot.hold(e);
+        }
+    });
+
+    canvas.addEventListener('mouseup', function(e) {
+        if (isMouseOn(e, pot)) {
+            pot.release(e);
+        }
     });
 
     document.addEventListener('keydown', function(event) {
@@ -162,6 +180,25 @@ function isCarrotRightOfCol(obj, col) {
     }
 }
 
+function isBrowserMoving() {
+    if (browserXPos.length < 10) {
+        browserXPos.push(window.screenX);
+    } else {
+        browserXPos.splice(0, 1);
+        browserXPos.push(window.screenX);
+
+        let movementTot = 0;
+
+        for (let i = 0; i < 8; i++) {
+            movementTot += Math.abs(browserXPos[i] - browserXPos[i+1])
+        }
+
+        if (movementTot > 600) {
+            browserMoving = true;
+        }
+    }
+}
+
 function main() {
     requestAnimationFrame(main);
     frames++;
@@ -177,6 +214,8 @@ function main() {
         canvas.height = window.innerHeight;
         canvasOffset = window.innerHeight - CANVAS_HEIGHT;
     }
+
+    isBrowserMoving();
 
     objects.forEach(object => {
         object.update();

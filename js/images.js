@@ -24,14 +24,6 @@ const IMG_LIGHTBULBON = new Image();
 IMG_LIGHTBULBON.src = "img/LightBulb_On.png";
 images.push(IMG_LIGHTBULBON);
 
-const IMG_AQUARIUM = new Image();
-IMG_AQUARIUM.src = "img/Aquarium.png";
-images.push(IMG_AQUARIUM);
-
-const IMG_BOOKSONSHELF = new Image();
-IMG_BOOKSONSHELF.src = "img/BooksOnShelf.png";
-images.push(IMG_BOOKSONSHELF);
-
 const IMG_POT = new Image();
 IMG_POT.src = "img/Pot_v2.png";
 images.push(IMG_POT);
@@ -46,6 +38,12 @@ images.push(IMG_WINDOWBROKEN);
 
 const IMG_TILES_DOG = new Image();
 IMG_TILES_DOG.src = "img/Dog_Tilesheet.png";
+
+const IMG_TILES_BOOKONSHELF = new Image();
+IMG_TILES_BOOKONSHELF.src = "img/BooksOnShelf_Tilesheet.png";
+
+const IMG_TILES_WATERFALL = new Image();
+IMG_TILES_WATERFALL.src = "img/Waterfall_Tilesheet.png";
 
 const IMG_TILES_CARROT = new Image();
 IMG_TILES_CARROT.src = "img/Carrot_Tilesheet.png";

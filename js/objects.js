@@ -92,6 +92,15 @@ function Pot(x, y, image) {
     this.height = image.height;
     this.sprite = image;
 
+    this.hold = function(e) {
+        this.x = e.offsetX - this.width/2 - canvasOffset;
+        this.y = e.offsetY - this.height/2 - canvasOffset;
+    }
+
+    this.release = function(e) {
+        console.log("released");
+    }
+
     this.update = function() {
 
         this.draw();
@@ -103,23 +112,6 @@ function Pot(x, y, image) {
 }
 
 function Window(x, y, image) {
-    this.x = x;
-    this.y = y;
-    this.width = image.width;
-    this.height = image.height;
-    this.sprite = image;
-
-    this.update = function() {
-
-        this.draw();
-    }
-
-    this.draw = function() {
-        ctx.drawImage(this.sprite, this.x, this.y + canvasOffset, this.width, this.height);
-    }
-}
-
-function Aquarium(x, y, image) {
     this.x = x;
     this.y = y;
     this.width = image.width;
@@ -162,6 +154,77 @@ function Dog(x, y, image) {
     }
 }
 
+function Waterfall(x, y, image) {
+    this.x = x;
+    this.y = y;
+    this.width = 100;
+    this.height = 320;
+    this.sprite = image;
+    this.animationFrame = 0;
+    this.active = true;
+
+
+    this.update = function() {
+        if (this.active) {
+            if (this.animationFrame < 15) {
+                if (!(frames%4)) {
+                    this.animationFrame++;
+                }
+            } else {
+                carrot.isWatered = true;
+                this.active = false;
+            }
+    
+            this.draw();
+        }
+    }
+
+    this.draw = function() {
+        let posY = Math.floor(this.animationFrame/8) + 1;
+        let sourceX = this.width * (this.animationFrame - (posY * 8) + 8);
+        let sourceY = this.height * (posY-1);
+
+        ctx.drawImage(this.sprite, sourceX, sourceY, this.width, this.height, this.x, this.y + canvasOffset, this.width, this.height);
+    }
+}
+
+function BookShelfAquarium(x, y, image) {
+    this.x = x;
+    this.y = y;
+    this.width = 267;
+    this.height = 99;
+    this.sprite = image;
+    this.animationFrame = 0;
+    this.waterfallAnimation = true;
+
+
+    this.update = function() {
+        if (browserMoving) {
+            if (this.animationFrame < 7) {
+                if (!(frames%4)) {
+                    this.animationFrame++;
+                }
+            }
+        }
+
+        if (this.animationFrame === 7 && this.waterfallAnimation) {
+            let waterfall = new Waterfall(this.x + this.width - 3, this.y + this.height/2 + 4, IMG_TILES_WATERFALL);
+            objects.splice(3, 0, waterfall);
+            this.waterfallAnimation = false;
+        }
+
+        this.draw();
+    }
+
+    this.draw = function() {
+        let posY = Math.floor(this.animationFrame/4) + 1;
+        let sourceX = this.width * (this.animationFrame - (posY * 4) + 4);
+        let sourceY = this.height * (posY-1);
+
+        ctx.drawImage(this.sprite, sourceX, sourceY, this.width, this.height, this.x, this.y + canvasOffset, this.width, this.height);
+    }
+}
+
 function Carrot(x, y, image) {
     this.x = x;
     this.y = y;
@@ -170,6 +233,7 @@ function Carrot(x, y, image) {
     this.sprite = image;
     this.animationFrame = 2;
     this.isBaby = true;
+    this.isWatered = false;
     this.isAdult = false;
     this.speedX = 0;
     this.speedY = 0;
@@ -246,7 +310,7 @@ function Carrot(x, y, image) {
     }
 
     this.update = function() {
-        if (canvasOffset < -160 && !this.isAdult && !darkToggle) {
+        if (canvasOffset < -160 && !this.isAdult && !darkToggle && this.isWatered) {
             this.isBaby = false;
 
             if (this.animationFrame < 39) {
