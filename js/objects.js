@@ -88,20 +88,72 @@ function Table(x, y, image) {
 function Pot(x, y, image) {
     this.x = x;
     this.y = y;
+    this.pos = [];
+    this.pos[0] = {
+        x: this.x,
+        y: this.y
+    };
     this.width = image.width;
     this.height = image.height;
     this.sprite = image;
+    this.isHeld = false;
+    this.speedX = 0;
+    this.speedY = 0;
+    this.maxSpeed = 5;
+    this.gravitate = true;
 
-    this.hold = function(e) {
-        this.x = e.offsetX - this.width/2 - canvasOffset;
-        this.y = e.offsetY - this.height/2 - canvasOffset;
+
+    this.hold = function() {
+        if (carrot.isAdult) {
+            this.isHeld = true;
+        }
     }
 
-    this.release = function(e) {
-        console.log("released");
+    this.release = function() {
+        if (this.isHeld) {
+            let posLength = this.pos.length;
+            let xspeed = this.pos[posLength-1].x - this.pos[posLength-10].x;
+
+            this.speedX = Math.round(xspeed/16);
+
+            this.isHeld = false;
+        }
     }
 
     this.update = function() {
+        if (this.isHeld) {
+            this.x = mousePos[0] - this.width/2;
+            this.y = mousePos[1] - this.height/2 - canvasOffset;
+
+            this.pos[this.pos.length] = {};
+            this.pos[this.pos.length-1].x = this.x;
+            this.pos[this.pos.length-1].y = this.y;
+        } else {
+            for (let i = 0; i < colliders.length; i++) {
+                if (isCarrotOnTopOfCol(this, colliders[i])) {
+                    this.gravitate = false;
+                    break;
+                } else if (!this.mouseSticking) {
+                    this.gravitate = true;
+                }
+            }
+    
+            if (this.gravitate) {
+                if (this.speedY < this.maxSpeed) { //GRAVITY
+                    this.speedY++;
+                }
+            } else {
+                this.speedY = 0;
+            }
+            if (this.speedX < 0) { //DRAG
+                this.speedX++;
+            } else if (this.speedX > 0) {
+                this.speedX--;
+            }
+        }
+
+        this.x += this.speedX;
+        this.y += this.speedY;
 
         this.draw();
     }
@@ -119,6 +171,12 @@ function Window(x, y, image) {
     this.sprite = image;
 
     this.update = function() {
+        if (this.x + this.width/2 - (pot.x + pot.width) < 32 &&
+            this.x + this.width/2 - (pot.x + pot.width) > -32 &&
+            this.y + this.height - (pot.y + pot.height) < 32 &&
+            this.y + this.height - (pot.y + pot.height) > -32) {
+                this.sprite = IMG_WINDOWBROKEN;
+            }
 
         this.draw();
     }
@@ -242,16 +300,16 @@ function Carrot(x, y, image) {
     this.mouseSticking = false;
 
 
-    this.mouseStick = function(e) {
-        if (carrot.y + carrot.height + canvasOffset - e.offsetY < 15 &&
-            carrot.y + carrot.height + canvasOffset - e.offsetY > -15 &&
-            carrot.x+36 < e.offsetX &&
-            carrot.x + carrot.width-35 > e.offsetX &&
+    this.mouseStick = function() {
+        if (carrot.y + carrot.height + canvasOffset - mousePos[1] < 15 &&
+            carrot.y + carrot.height + canvasOffset - mousePos[1] > -15 &&
+            carrot.x+36 < mousePos[0] &&
+            carrot.x + carrot.width-35 > mousePos[0] &&
             carrot.isAdult) { 
 
         this.mouseSticking = true;
-        this.y = e.offsetY - this.height - canvasOffset - 3;
-        let moveX = e.offsetX - this.x - this.width/2;
+        this.y = mousePos[1] - this.height - canvasOffset - 3;
+        let moveX = mousePos[0] - this.x - this.width/2;
         this.x += moveX;
 
         } else {
@@ -344,9 +402,9 @@ function Carrot(x, y, image) {
             this.speedY = 0;
         }
 
-        
-
+    
         this.move();
+        this.mouseStick();
         this.x += this.speedX/2;
         this.y += this.speedY;
         this.draw();

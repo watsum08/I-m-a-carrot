@@ -8,6 +8,8 @@ let canvasOffset = 0;
 let frames = 0;
 let timer = 0;
 
+let mousePos = [];
+let clickPos = [];
 let leftKeyDown = false;
 let rightKeyDown = false;
 
@@ -64,9 +66,11 @@ function start() {
     tableCollider.y += 3;
     colliders.push(tableCollider);
 
-    pot = new Pot((CANVAS_WIDTH-IMG_POT.width)/2, 451, IMG_POT);
-    objects.push(pot);
-    colliders.push(pot);
+    theWindow = new Window(900, 80, IMG_WINDOWNEW);
+    objects.push(theWindow);
+
+    dog = new Dog(1051, 231, IMG_TILES_DOG);
+    objects.push(dog);
 
     bookshelfaquarium = new BookShelfAquarium(305, 100, IMG_TILES_BOOKONSHELF);
     objects.push(bookshelfaquarium);
@@ -75,11 +79,9 @@ function start() {
     shelfCollider.height = 16;
     colliders.push(shelfCollider);
 
-    theWindow = new Window(900, 80, IMG_WINDOWNEW);
-    objects.push(theWindow);
-
-    dog = new Dog(1051, 231, IMG_TILES_DOG);
-    objects.push(dog);
+    pot = new Pot((CANVAS_WIDTH-IMG_POT.width)/2, 451, IMG_POT);
+    objects.push(pot);
+    colliders.push(pot);
 
     carrot = new Carrot((CANVAS_WIDTH-100)/2, 325, IMG_TILES_CARROT);
     objects.push(carrot);
@@ -91,19 +93,18 @@ function start() {
     });
 
     canvas.addEventListener('mousemove', function(e) {
-        carrot.mouseStick(e);
+        mousePos[0] = e.offsetX;
+        mousePos[1] = e.offsetY;
     });
 
     canvas.addEventListener('mousedown', function(e) {
         if (isMouseOn(e, pot)) {
-            pot.hold(e);
+            pot.hold();
         }
     });
 
     canvas.addEventListener('mouseup', function(e) {
-        if (isMouseOn(e, pot)) {
-            pot.release(e);
-        }
+        pot.release();
     });
 
     document.addEventListener('keydown', function(event) {
@@ -201,6 +202,8 @@ function isBrowserMoving() {
 
 function main() {
     requestAnimationFrame(main);
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
     frames++;
     if(!(frames%60)) {
         timer++;
@@ -222,7 +225,15 @@ function main() {
     });
 
     if (darkToggle) {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+        ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.fillRect(0, 0, theWindow.x+19, CANVAS_HEIGHT);
+        ctx.fillRect(theWindow.x+19, 0, theWindow.width-38, theWindow.y+canvasOffset+19);
+        ctx.fillRect(theWindow.x+theWindow.width-19, 0, CANVAS_WIDTH-theWindow.x, CANVAS_HEIGHT);
+        ctx.fillRect(theWindow.x+19, theWindow.y+theWindow.height+canvasOffset-19, theWindow.width-38, CANVAS_HEIGHT-theWindow.height-theWindow.y-canvasOffset);
+    } else {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+        ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);
     }
 }
