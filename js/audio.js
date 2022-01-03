@@ -1,4 +1,5 @@
 const AUDIO_BG = new Audio("audio/KevinMacLeod_Pixelland.mp3");
+AUDIO_BG.loop = true;
 AUDIO_BG.volume = 0.3;
 
 const AUDIO_WATERDROP = new Audio("audio/waterdrop.mp3");
