@@ -23,13 +23,17 @@ let theSwitch;
 let lightBulb;
 let table;
 let pot;
-let aquarium;
+let bookshelfaquarium;
 let theWindow;
 let dog;
 let carrot;
 let darkToggle = true;
+let gameOver = false;
+let windowCollider;
 
 function start() {
+    AUDIO_BG.play();
+
     background = new Background(IMG_BACKGROUND);
     objects.push(background);
     let bgCollider = new Object();
@@ -68,9 +72,18 @@ function start() {
 
     theWindow = new Window(900, 80, IMG_WINDOWNEW);
     objects.push(theWindow);
+    windowCollider = Object.assign({}, theWindow);
+    windowCollider.x += 21;
+    windowCollider.width = theWindow.width - 42;
+    windowCollider.y += windowCollider.height - 20;
+    windowCollider.height = 20;
+    colliders.push(windowCollider);
 
     dog = new Dog(1051, 231, IMG_TILES_DOG);
     objects.push(dog);
+
+    goldfish = new Goldfish(505, 147, IMG_TILES_GOLDFISH);
+    objects.push(goldfish);
 
     bookshelfaquarium = new BookShelfAquarium(305, 100, IMG_TILES_BOOKONSHELF);
     objects.push(bookshelfaquarium);
@@ -231,7 +244,7 @@ function main() {
         ctx.fillRect(0, 0, theWindow.x+19, CANVAS_HEIGHT);
         ctx.fillRect(theWindow.x+19, 0, theWindow.width-38, theWindow.y+canvasOffset+19);
         ctx.fillRect(theWindow.x+theWindow.width-19, 0, CANVAS_WIDTH-theWindow.x, CANVAS_HEIGHT);
-        ctx.fillRect(theWindow.x+19, theWindow.y+theWindow.height+canvasOffset-19, theWindow.width-38, CANVAS_HEIGHT-theWindow.height-theWindow.y-canvasOffset);
+        ctx.fillRect(theWindow.x+19, theWindow.y+theWindow.height+canvasOffset-19, theWindow.width-38, CANVAS_HEIGHT-theWindow.height-theWindow.y-canvasOffset+19);
     } else {
         ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
         ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);

@@ -39,6 +39,9 @@ images.push(IMG_WINDOWBROKEN);
 const IMG_TILES_DOG = new Image();
 IMG_TILES_DOG.src = "img/Dog_Tilesheet.png";
 
+const IMG_TILES_GOLDFISH = new Image();
+IMG_TILES_GOLDFISH.src = "img/Goldfish_Tilesheet.png";
+
 const IMG_TILES_BOOKONSHELF = new Image();
 IMG_TILES_BOOKONSHELF.src = "img/BooksOnShelf_Tilesheet.png";
 

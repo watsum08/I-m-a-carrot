@@ -169,14 +169,32 @@ function Window(x, y, image) {
     this.width = image.width;
     this.height = image.height;
     this.sprite = image;
+    this.isBroken = false;
 
     this.update = function() {
-        if (this.x + this.width/2 - (pot.x + pot.width) < 32 &&
+        if (!this.isBroken) {
+            let n = Math.floor(Math.random() * 3);
+            if (this.x + this.width/2 - (pot.x + pot.width) < 32 &&
             this.x + this.width/2 - (pot.x + pot.width) > -32 &&
             this.y + this.height - (pot.y + pot.height) < 32 &&
             this.y + this.height - (pot.y + pot.height) > -32) {
                 this.sprite = IMG_WINDOWBROKEN;
+                this.isBroken = true;
+                switch (n) {
+                    case 0:
+                        AUDIO_GLASSBREAK1.play();
+                        break;
+                    case 1:
+                        AUDIO_GLASSBREAK2.play();
+                        break;
+                    case 2:
+                        AUDIO_GLASSBREAK3.play();
+                        break;
+                    default:
+                        break;
+                }
             }
+        }
 
         this.draw();
     }
@@ -212,6 +230,60 @@ function Dog(x, y, image) {
     }
 }
 
+function Goldfish(x, y, image) {
+    this.x = x;
+    this.y = y;
+    this.width = 30;
+    this.height = 18;
+    this.sprite = image;
+    this.animationFrame = 0;
+    this.dead = false;
+    this.goingRight = false;
+
+    this.update = function() {
+        if (!(frames%20)) {
+            if (!this.dead) {
+                if (this.animationFrame < 3) {
+                    this.animationFrame++;
+                    this.x += 2;
+                    this.goingRight = true;
+                } else if (this.animationFrame < 7) {
+                    this.animationFrame++;
+                    this.x -= 2;
+                    this.goingRight = false;
+                } else {
+                    this.animationFrame = 0;
+                    this.x += 2;
+                    this.goingRight = true;
+                }
+            } else if (this.goingRight && this.animationFrame < 11) {
+                if (this.animationFrame < 7) {
+                    this.animationFrame = 7;
+                } else {
+                    this.animationFrame++;
+                }
+            } else if (!this.goingRight && this.animationFrame < 15) {
+                if (this.animationFrame < 12) {
+                    this.animationFrame = 12;
+                } else {
+                    this.animationFrame++;
+                }
+            }
+        }
+        
+
+        this.draw();
+    }
+
+    this.draw = function() {
+        let posY = Math.floor(this.animationFrame/4) + 1;
+        let sourceX = this.width * (this.animationFrame - (posY * 4) + 4);
+        let sourceY = this.height * (posY-1);
+
+        ctx.drawImage(this.sprite, sourceX, sourceY, this.width, this.height, this.x, this.y + canvasOffset, this.width, this.height);
+    }
+}
+
 function Waterfall(x, y, image) {
     this.x = x;
     this.y = y;
@@ -220,7 +292,6 @@ function Waterfall(x, y, image) {
     this.sprite = image;
     this.animationFrame = 0;
     this.active = true;
-
 
     this.update = function() {
         if (this.active) {
@@ -258,7 +329,7 @@ function BookShelfAquarium(x, y, image) {
 
     this.update = function() {
         if (browserMoving) {
-            if (this.animationFrame < 7) {
+            if (this.animationFrame < 11) {
                 if (!(frames%4)) {
                     this.animationFrame++;
                 }
@@ -266,9 +337,11 @@ function BookShelfAquarium(x, y, image) {
         }
 
         if (this.animationFrame === 7 && this.waterfallAnimation) {
+            AUDIO_WATERDROP.play();
             let waterfall = new Waterfall(this.x + this.width - 3, this.y + this.height/2 + 4, IMG_TILES_WATERFALL);
             objects.splice(3, 0, waterfall);
             this.waterfallAnimation = false;
+            goldfish.dead = true;
         }
 
         this.draw();
@@ -401,6 +474,14 @@ function Carrot(x, y, image) {
         } else if (this.isAdult && !this.gravitate && !this.mouseSticking) {
             this.speedY = 0;
         }
+
+        if (theWindow.isBroken &&
+            this.x + this.width/2 - (theWindow.x + theWindow.width) < 32 &&
+            this.x + this.width/2 - (theWindow.x + theWindow.width) > -32 &&
+            this.y + this.height - (theWindow.y + theWindow.height) < 32 &&
+            this.y + this.height - (theWindow.y + theWindow.height) > -32) {
+                gameOver = true;
+            }
 
     
         this.move();
