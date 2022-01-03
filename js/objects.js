@@ -371,6 +371,7 @@ function Carrot(x, y, image) {
     this.maxSpeed = 4;
     this.gravitate = false;
     this.mouseSticking = false;
+    this.gameOverTimer = 0;
 
 
     this.mouseStick = function() {
@@ -476,11 +477,16 @@ function Carrot(x, y, image) {
         }
 
         if (theWindow.isBroken &&
-            this.x + this.width/2 - (theWindow.x + theWindow.width) < 32 &&
-            this.x + this.width/2 - (theWindow.x + theWindow.width) > -32 &&
-            this.y + this.height - (theWindow.y + theWindow.height) < 32 &&
-            this.y + this.height - (theWindow.y + theWindow.height) > -32) {
-                gameOver = true;
+            this.x - (theWindow.x + 16) < 32 &&
+            this.x - (theWindow.x + 16) > -32 &&
+            this.y + this.height - (theWindow.y + theWindow.height - 10) < 32 &&
+            this.y + this.height - (theWindow.y + theWindow.height - 10) > -32) {
+                if (this.gameOverTimer < 60) {
+                    this.gameOverTimer++;
+                } else {
+                    gameOver = true;
+                    console.log("gameover?");
+                }
             }
 
     

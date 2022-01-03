@@ -207,7 +207,7 @@ function isBrowserMoving() {
             movementTot += Math.abs(browserXPos[i] - browserXPos[i+1])
         }
 
-        if (movementTot > 600) {
+        if (movementTot > 500) {
             browserMoving = true;
         }
     }
@@ -215,38 +215,45 @@ function isBrowserMoving() {
 
 function main() {
     requestAnimationFrame(main);
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    if (!gameOver) {
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    frames++;
-    if(!(frames%60)) {
-        timer++;
-        frames = 0;
-    }
+        frames++;
+        if(!(frames%60)) {
+            timer++;
+            frames = 0;
+        }
 
-    if(window.innerHeight >= CANVAS_HEIGHT) {
-        canvas.height = CANVAS_HEIGHT
-        canvasOffset = 0;
+        if(window.innerHeight >= CANVAS_HEIGHT) {
+            canvas.height = CANVAS_HEIGHT
+            canvasOffset = 0;
+        } else {
+            canvas.height = window.innerHeight;
+            canvasOffset = window.innerHeight - CANVAS_HEIGHT;
+        }
+
+        isBrowserMoving();
+
+        objects.forEach(object => {
+            object.update();
+        });
+
+        if (darkToggle) {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+            ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            ctx.fillRect(0, 0, theWindow.x+19, CANVAS_HEIGHT);
+            ctx.fillRect(theWindow.x+19, 0, theWindow.width-38, theWindow.y+canvasOffset+19);
+            ctx.fillRect(theWindow.x+theWindow.width-19, 0, CANVAS_WIDTH-theWindow.x, CANVAS_HEIGHT);
+            ctx.fillRect(theWindow.x+19, theWindow.y+theWindow.height+canvasOffset-19, theWindow.width-38, CANVAS_HEIGHT-theWindow.height-theWindow.y-canvasOffset+19);
+        } else {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+            ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);
+        }
     } else {
-        canvas.height = window.innerHeight;
-        canvasOffset = window.innerHeight - CANVAS_HEIGHT;
-    }
-
-    isBrowserMoving();
-
-    objects.forEach(object => {
-        object.update();
-    });
-
-    if (darkToggle) {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-        ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-        ctx.fillRect(0, 0, theWindow.x+19, CANVAS_HEIGHT);
-        ctx.fillRect(theWindow.x+19, 0, theWindow.width-38, theWindow.y+canvasOffset+19);
-        ctx.fillRect(theWindow.x+theWindow.width-19, 0, CANVAS_WIDTH-theWindow.x, CANVAS_HEIGHT);
-        ctx.fillRect(theWindow.x+19, theWindow.y+theWindow.height+canvasOffset-19, theWindow.width-38, CANVAS_HEIGHT-theWindow.height-theWindow.y-canvasOffset+19);
-    } else {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-        ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);
+        AUDIO_BG.pause();
+        AUDIO_OUTRO.play();
+        ctx.fillStyle = "red";
+        ctx.fillRect(0, 0, 1280, 720);
     }
 }
