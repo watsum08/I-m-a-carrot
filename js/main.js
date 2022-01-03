@@ -214,8 +214,8 @@ function isBrowserMoving() {
 }
 
 function main() {
-    requestAnimationFrame(main);
     if (!gameOver) {
+        requestAnimationFrame(main);
         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
         frames++;
@@ -251,9 +251,20 @@ function main() {
             ctx.fillRect(theWindow.x+16, theWindow.y+canvasOffset+16, theWindow.width-32, theWindow.height-32);
         }
     } else {
+        cancelAnimationFrame(main);
+        console.log("test cancel");
         AUDIO_BG.pause();
-        AUDIO_OUTRO.play();
-        ctx.fillStyle = "red";
-        ctx.fillRect(0, 0, 1280, 720);
+        ctx.clearRect(0, 0, 1280, 720);
+        canvas.style.display = "none";
+        VIDEO_PLAYER.style.display = "flex";
+        VIDEO_PLAYER.style.margin = "auto";
+        VIDEO_PLAYER.load();
+        VIDEO_PLAYER.autoPlay = true;
+        VIDEO_PLAYER.loop = false;
+        VIDEO_PLAYER.muted = false;
+        VIDEO_PLAYER.onloadeddata = function() {
+            VIDEO_PLAYER.play();
+        }
+        return;
     }
 }

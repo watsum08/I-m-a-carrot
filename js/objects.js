@@ -481,11 +481,10 @@ function Carrot(x, y, image) {
             this.x - (theWindow.x + 16) > -32 &&
             this.y + this.height - (theWindow.y + theWindow.height - 10) < 32 &&
             this.y + this.height - (theWindow.y + theWindow.height - 10) > -32) {
-                if (this.gameOverTimer < 60) {
+                if (this.gameOverTimer < 30) {
                     this.gameOverTimer++;
                 } else {
                     gameOver = true;
-                    console.log("gameover?");
                 }
             }
 
